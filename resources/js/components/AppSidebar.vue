@@ -22,6 +22,11 @@ const csNavItems: NavItem[] = [
         href: '/cs/team-generator',
         icon: Users,
     },
+    {
+        title: 'CS2 Player Search',
+        href: '/cs/faceit-search',
+        icon: Users,
+    }
 ];
 
 const footerNavItems: NavItem[] = [

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import AppLayout from '@/layouts/AppLayout.vue';
-import CS2TeamGenerator from '@/components/CS2TeamGenerator.vue';
-import CS2MapRandomizer from '@/components/CS2MapRandomizer.vue';
+import CS2TeamGenerator from '@/components/counterstrike/CS2TeamGenerator.vue';
+import CS2MapRandomizer from '@/components/counterstrike/CS2MapRandomizer.vue';
 import { type BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/vue3';
 
