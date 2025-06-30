@@ -7,14 +7,14 @@ import { Head } from '@inertiajs/vue3';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'CS2 Team Generator',
+        title: 'Team Generator',
         href: '/cs/team-generator',
     },
 ];
 </script>
 
 <template>
-    <Head title="CS2 Team Generator" />
+    <Head title="Team Generator" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="flex h-full flex-1 flex-col gap-4 rounded-xl p-4">

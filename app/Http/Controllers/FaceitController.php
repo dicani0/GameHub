@@ -3,58 +3,75 @@
 namespace App\Http\Controllers;
 
 use App\Actions\Faceit\GetMatchDetailsAction;
-use App\Actions\Faceit\GetPlayerAction;
+use App\Actions\Faceit\GetPlayerBasicAction;
+use App\Actions\Faceit\GetPlayerStatsAction;
+use App\Actions\Faceit\GetPlayerHistoryAction;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Inertia\Inertia;
+use Inertia\Response;
 
 class FaceitController extends Controller
 {
-    protected GetPlayerAction $getPlayerAction;
+    protected GetPlayerBasicAction $getPlayerBasicAction;
+    protected GetPlayerStatsAction $getPlayerStatsAction;
+    protected GetPlayerHistoryAction $getPlayerHistoryAction;
     protected GetMatchDetailsAction $getMatchDetailsAction;
 
     public function __construct(
-        GetPlayerAction $getPlayerAction,
+        GetPlayerBasicAction $getPlayerBasicAction,
+        GetPlayerStatsAction $getPlayerStatsAction,
+        GetPlayerHistoryAction $getPlayerHistoryAction,
         GetMatchDetailsAction $getMatchDetailsAction
     ) {
-        $this->getPlayerAction = $getPlayerAction;
+        $this->getPlayerBasicAction = $getPlayerBasicAction;
+        $this->getPlayerStatsAction = $getPlayerStatsAction;
+        $this->getPlayerHistoryAction = $getPlayerHistoryAction;
         $this->getMatchDetailsAction = $getMatchDetailsAction;
     }
 
     /**
      * @param Request $request
-     * @return JsonResponse
+     * @return Response
      */
-    public function getPlayer(Request $request): JsonResponse
+    public function getPlayerResults(Request $request): Response
     {
         $nickname = $request->input('nickname');
-        
         if (!$nickname) {
-            return response()->json([
-                'error' => 'Nickname is required',
-            ], 400);
+            return Inertia::render('counterstrike/FaceitSearch', [
+                'error' => 'Nickname is required'
+            ]);
         }
-        
-        $includeStats = $request->boolean('include_stats', false);
-        $includeHistory = $request->boolean('include_history', false);
-        
+
         try {
-            $player = $this->getPlayerAction->execute($nickname, $includeStats, $includeHistory);
-            if (!$player) {
-                return response()->json([
-                    'error' => 'Player not found',
-                ], 404);
-            }
+            $player = $this->getPlayerBasicAction->execute($nickname);
             
-            return response()->json($player);
+            if (!$player) {
+                return Inertia::render('counterstrike/FaceitSearch', [
+                    'error' => 'Player not found'
+                ]);
+            }
+            $includeStats = $request->boolean('include_stats', false);
+            $includeHistory = $request->boolean('include_history', false);
+            return Inertia::render('counterstrike/FaceitSearch', [
+                'player' => $player,
+                'stats' => $includeStats ? Inertia::defer(fn () => $this->getPlayerStatsAction->execute($player['player_id']), 'stats') : null,
+                'history' => $includeHistory ? Inertia::defer(fn () => $this->getPlayerHistoryAction->execute
+                ($player['player_id']), 'history') : null,
+                'includeStats' => $includeStats,
+                'includeHistory' => $includeHistory,
+            ]);
+
         } catch (\Exception $e) {
             Log::error('Error fetching player data: ' . $e->getMessage());
-            
-            return response()->json([
-                'error' => 'Failed to fetch player data',
-            ], 500);
+
+            return Inertia::render('counterstrike/FaceitSearch', [
+                'error' => 'Failed to fetch player data'
+            ]);
         }
     }
+
 
     /**
      * @param Request $request
@@ -64,20 +81,20 @@ class FaceitController extends Controller
     public function getMatchDetails(Request $request, string $matchId): JsonResponse
     {
         $includeStats = $request->boolean('include_stats', false);
-        
+
         try {
             $match = $this->getMatchDetailsAction->execute($matchId, $includeStats);
-            
+
             if (!$match) {
                 return response()->json([
                     'error' => 'Match not found',
                 ], 404);
             }
-            
+
             return response()->json($match);
         } catch (\Exception $e) {
             Log::error('Error fetching match data: ' . $e->getMessage());
-            
+
             return response()->json([
                 'error' => 'Failed to fetch match data',
             ], 500);

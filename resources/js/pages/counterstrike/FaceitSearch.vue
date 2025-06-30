@@ -9,7 +9,15 @@
             Search for Faceit players and view their stats and match history.
           </p>
 
-          <FaceitPlayerSearch />
+          <FaceitPlayerSearch 
+            :player="props.player"
+            :stats="props.stats"
+            :history="props.history"
+            :nickname="props.nickname"
+            :includeStats="props.includeStats"
+            :includeHistory="props.includeHistory"
+            :error="props.error"
+          />
         </div>
       </div>
     </div>
@@ -21,6 +29,27 @@
 import FaceitPlayerSearch from '@/components/counterstrike/FaceitPlayerSearch.vue';
 import AppLayout from '@/layouts/AppLayout.vue';
 import type { BreadcrumbItem } from '@/types';
+import { withDefaults, defineProps } from 'vue';
+
+interface Props {
+    player?: any;
+    stats?: any;
+    history?: any;
+    nickname?: string;
+    includeStats?: boolean;
+    includeHistory?: boolean;
+    error?: string;
+}
+
+const props = withDefaults(defineProps<Props>(), {
+    player: null,
+    stats: null,
+    history: null,
+    nickname: '',
+    includeStats: false,
+    includeHistory: false,
+    error: null,
+});
 
 const breadcrumbs: BreadcrumbItem[] = [
     {

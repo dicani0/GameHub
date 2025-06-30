@@ -18,13 +18,13 @@ const platformNavItems: NavItem[] = [
 
 const csNavItems: NavItem[] = [
     {
-        title: 'CS2 Team Generator',
+        title: 'Team Generator',
         href: '/cs/team-generator',
         icon: Users,
     },
     {
-        title: 'CS2 Player Search',
-        href: '/cs/faceit-search',
+        title: 'Player Search',
+        href: '/cs/faceit/search',
         icon: Users,
     }
 ];
