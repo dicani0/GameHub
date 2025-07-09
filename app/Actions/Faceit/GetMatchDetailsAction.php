@@ -2,7 +2,11 @@
 
 namespace App\Actions\Faceit;
 
+use App\Data\Faceit\MatchDetailsData;
+use App\Data\Faceit\MatchData;
+use App\Data\Faceit\MatchStatsData;
 use App\Services\FaceitService;
+use Spatie\LaravelData\Optional;
 
 class GetMatchDetailsAction
 {
@@ -16,9 +20,9 @@ class GetMatchDetailsAction
     /**
      * @param string $matchId
      * @param bool $includeStats
-     * @return array|null
+     * @return MatchDetailsData|null
      */
-    public function execute(string $matchId, bool $includeStats = false): ?array
+    public function execute(string $matchId, bool $includeStats = false): ?MatchDetailsData
     {
         $matchDetails = $this->getMatchDetails($matchId);
 
@@ -26,15 +30,20 @@ class GetMatchDetailsAction
             return null;
         }
 
-        $result = [
-            'match' => $matchDetails,
-        ];
-
+        $matchData = MatchData::from($matchDetails);
+        
+        $statsData = Optional::create();
         if ($includeStats) {
-            $result['stats'] = $this->getMatchStats($matchId);
+            $matchStats = $this->getMatchStats($matchId);
+            if ($matchStats) {
+                $statsData = MatchStatsData::from($matchStats);
+            }
         }
 
-        return $result;
+        return new MatchDetailsData(
+            match: $matchData,
+            stats: $statsData
+        );
     }
 
     /**

@@ -46,7 +46,7 @@ class FaceitController extends Controller
 
         try {
             $player = $this->getPlayerBasicAction->execute($nickname);
-            
+
             if (!$player) {
                 return Inertia::render('counterstrike/FaceitSearch', [
                     'error' => 'Player not found'
@@ -83,15 +83,15 @@ class FaceitController extends Controller
         $includeStats = $request->boolean('include_stats', false);
 
         try {
-            $match = $this->getMatchDetailsAction->execute($matchId, $includeStats);
+            $matchDetailsData = $this->getMatchDetailsAction->execute($matchId, $includeStats);
 
-            if (!$match) {
+            if (!$matchDetailsData) {
                 return response()->json([
                     'error' => 'Match not found',
                 ], 404);
             }
 
-            return response()->json($match);
+            return response()->json($matchDetailsData->toArray());
         } catch (\Exception $e) {
             Log::error('Error fetching match data: ' . $e->getMessage());
 
