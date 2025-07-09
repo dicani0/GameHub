@@ -104,6 +104,33 @@ class SteamService
         return $playtimes;
     }
 
+    public function getSteamLevel(string $steamId): ?int
+    {
+        $response = $this->makeRequest('GET', '/IPlayerService/GetSteamLevel/v1/', [
+            'query' => [
+                'key' => $this->apiKey,
+                'steamid' => $steamId,
+            ]
+        ]);
+
+        if ($response && isset($response['response']['player_level'])) {
+            return $response['response']['player_level'];
+        }
+
+        return null;
+    }
+
+    public function getSteamLevelsForMultiplePlayers(array $steamIds): array
+    {
+        $levels = [];
+
+        foreach ($steamIds as $steamId) {
+            $levels[$steamId] = $this->getSteamLevel($steamId);
+        }
+
+        return $levels;
+    }
+
     private function makeRequest(string $method, string $endpoint, array $options = []): ?array
     {
         try {

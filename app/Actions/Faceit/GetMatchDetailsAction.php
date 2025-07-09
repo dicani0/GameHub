@@ -41,17 +41,26 @@ class GetMatchDetailsAction
             });
 
             if ($matchStats) {
+                $matchStats = $this->sortPlayersByADR($matchStats);
                 $statsData = MatchStatsData::from($matchStats);
             }
         }
 
         $steamProfiles = Optional::create();
         if ($includeSteamProfiles) {
-            $steamIds = $this->extractSteamIdsFromMatch($matchDetails);
+            $playerIdToSteamIdMap = $this->extractPlayerIdToSteamIdMapping($matchDetails);
+            $steamIds = array_values($playerIdToSteamIdMap);
             if (!empty($steamIds)) {
-                $steamProfiles = Cache::remember("steam.profiles." . implode(',', $steamIds), now()->addMinutes(10), function () use ($steamIds) {
+                $steamProfilesData = Cache::remember("steam.profiles." . implode(',', $steamIds), now()->addMinutes(10), function () use ($steamIds) {
                     return $this->getSteamProfilesAction->execute($steamIds);
                 });
+
+                $steamProfiles = collect();
+                foreach ($playerIdToSteamIdMap as $faceitPlayerId => $steamId) {
+                    if ($steamProfilesData->has($steamId)) {
+                        $steamProfiles->put($faceitPlayerId, $steamProfilesData->get($steamId));
+                    }
+                }
             }
         }
 
@@ -73,22 +82,49 @@ class GetMatchDetailsAction
         return $this->faceitService->getMatchStats($matchId);
     }
 
-    private function extractSteamIdsFromMatch(array $matchDetails): array
+    private function extractPlayerIdToSteamIdMapping(array $matchDetails): array
     {
-        $steamIds = [];
+        $mapping = [];
 
         if (isset($matchDetails['teams'])) {
             foreach ($matchDetails['teams'] as $team) {
                 if (isset($team['roster'])) {
                     foreach ($team['roster'] as $player) {
-                        if (isset($player['game_player_id'])) {
-                            $steamIds[] = $player['game_player_id'];
+                        if (isset($player['player_id'], $player['game_player_id'])) {
+                            $mapping[$player['player_id']] = $player['game_player_id'];
                         }
                     }
                 }
             }
         }
 
-        return array_unique($steamIds);
+        return $mapping;
+    }
+
+    private function sortPlayersByADR(array $matchStats): array
+    {
+        if (!isset($matchStats['rounds'])) {
+            return $matchStats;
+        }
+
+        foreach ($matchStats['rounds'] as &$round) {
+            if (!isset($round['teams'])) {
+                continue;
+            }
+
+            foreach ($round['teams'] as &$team) {
+                if (!isset($team['players'])) {
+                    continue;
+                }
+
+                usort($team['players'], function ($a, $b) {
+                    $adrA = $a['player_stats']['ADR'] ?? 0;
+                    $adrB = $b['player_stats']['ADR'] ?? 0;
+                    return $adrB <=> $adrA;
+                });
+            }
+        }
+
+        return $matchStats;
     }
 }

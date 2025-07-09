@@ -15,7 +15,7 @@ class GetSteamProfilesAction
         $this->steamService = $steamService;
     }
 
-    public function execute(array $steamIds, bool $includePlaytime = true): Collection
+    public function execute(array $steamIds, bool $includePlaytime = true, bool $includeLevel = true): Collection
     {
         if (empty($steamIds)) {
             return collect();
@@ -37,13 +37,23 @@ class GetSteamProfilesAction
                 return $player;
             });
         }
+
+        if ($includeLevel) {
+            $levels = $this->steamService->getSteamLevelsForMultiplePlayers($steamIds);
+
+            $players = $players->map(function (array $player) use ($levels) {
+                $player['level'] = $levels[$player['steamid']] ?? null;
+                return $player;
+            });
+        }
+
         return $players
             ->map(fn (array $player) => SteamProfileData::from($player))
             ->keyBy('steamid');
     }
 
-    public function getSingle(string $steamId, bool $includePlaytime = true): ?SteamProfileData
+    public function getSingle(string $steamId, bool $includePlaytime = true, bool $includeLevel = true): ?SteamProfileData
     {
-        return $this->execute([$steamId], $includePlaytime)->get($steamId);
+        return $this->execute([$steamId], $includePlaytime, $includeLevel)->get($steamId);
     }
 }

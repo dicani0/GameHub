@@ -21,6 +21,7 @@ class SteamProfileData extends Data
         public ?string $locstatecode = null,
         public ?int $loccityid = null,
         public ?int $cs2_playtime_minutes = null,
+        public ?int $level = null,
     ) {}
 
     public function getCS2PlaytimeHours(): ?float

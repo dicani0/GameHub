@@ -122,13 +122,13 @@ const formatPlaytime = (minutes: number | null): string => {
                                             <div class="text-neutral-500 dark:text-neutral-400">
                                                 K/D: {{ player.player_stats['K/D Ratio'] }} |
                                                 HS: {{ player.player_stats['Headshots %'] }}%
-                                                <span v-if="matchDetails.steamProfiles && matchDetails.steamProfiles[player.player_id] && matchDetails.steamProfiles[player.player_id].realname">
-                                                    | {{ matchDetails.steamProfiles[player.player_id].realname }}
-                                                </span>
                                                 ADR: {{ player.player_stats['ADR'] }}
                                             </div>
                                             <div v-if="matchDetails.steamProfiles && matchDetails.steamProfiles[player.player_id]" class="text-xs text-neutral-400 dark:text-neutral-500">
                                                 CS2 Hours: {{ formatPlaytime(matchDetails.steamProfiles[player.player_id].cs2_playtime_minutes) }}
+                                                <span v-if="matchDetails.steamProfiles[player.player_id].level">
+                                                    | Level: {{ matchDetails.steamProfiles[player.player_id].level }}
+                                                </span>
                                             </div>
                                         </div>
                                     </div>
