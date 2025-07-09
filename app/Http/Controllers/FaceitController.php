@@ -72,18 +72,13 @@ class FaceitController extends Controller
         }
     }
 
-
-    /**
-     * @param Request $request
-     * @param string $matchId
-     * @return JsonResponse
-     */
     public function getMatchDetails(Request $request, string $matchId): JsonResponse
     {
         $includeStats = $request->boolean('include_stats', false);
+        $includeSteamProfiles = $request->boolean('include_steam_profiles', true);
 
         try {
-            $matchDetailsData = $this->getMatchDetailsAction->execute($matchId, $includeStats);
+            $matchDetailsData = $this->getMatchDetailsAction->execute($matchId, $includeStats, $includeSteamProfiles);
 
             if (!$matchDetailsData) {
                 return response()->json([
