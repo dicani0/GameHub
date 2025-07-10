@@ -9,7 +9,6 @@ Route::prefix('cs')->name('cs.')->group(function () {
         return Inertia::render('counterstrike/CS2TeamGenerator');
     })->name('cs.team-generator');
 
-
     Route::prefix('faceit')->name('faceit.')->group(function () {
         Route::get('search', function () {
             return Inertia::render('counterstrike/FaceitSearch');

@@ -14,13 +14,9 @@ class GetPlayerBasicAction
         $this->faceitService = $faceitService;
     }
 
-    /**
-     * @param string $nickname
-     * @return array|null
-     */
     public function execute(string $nickname): ?array
     {
-        return Cache::remember('faceit_player_basic_' . $nickname, 60 * 60, function () use ($nickname) {
+        return Cache::remember('faceit_player_basic_'.$nickname, 60 * 60, function () use ($nickname) {
             return $this->faceitService->getPlayerByNickname($nickname);
         });
     }

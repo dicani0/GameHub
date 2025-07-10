@@ -45,6 +45,6 @@ class SteamProfileData extends Data
             return '<1h';
         }
 
-        return number_format($hours, 1) . 'h';
+        return number_format($hours, 1).'h';
     }
 }

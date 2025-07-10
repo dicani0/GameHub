@@ -23,7 +23,7 @@ class GetSteamProfilesAction
 
         $response = $this->steamService->getPlayerSummaries($steamIds);
 
-        if (!$response || !isset($response['response']['players'])) {
+        if (! $response || ! isset($response['response']['players'])) {
             return collect();
         }
 
@@ -34,6 +34,7 @@ class GetSteamProfilesAction
 
             $players = $players->map(function (array $player) use ($playtimes) {
                 $player['cs2_playtime_minutes'] = $playtimes[$player['steamid']] ?? null;
+
                 return $player;
             });
         }
@@ -43,6 +44,7 @@ class GetSteamProfilesAction
 
             $players = $players->map(function (array $player) use ($levels) {
                 $player['level'] = $levels[$player['steamid']] ?? null;
+
                 return $player;
             });
         }

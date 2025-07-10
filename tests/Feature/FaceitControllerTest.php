@@ -2,10 +2,10 @@
 
 use App\Actions\Faceit\GetMatchDetailsAction;
 use App\Actions\Faceit\GetPlayerBasicAction;
-use App\Actions\Faceit\GetPlayerStatsAction;
 use App\Actions\Faceit\GetPlayerHistoryAction;
-use App\Data\Faceit\MatchDetailsData;
+use App\Actions\Faceit\GetPlayerStatsAction;
 use App\Data\Faceit\MatchData;
+use App\Data\Faceit\MatchDetailsData;
 use App\Data\Faceit\MatchStatsData;
 use Illuminate\Support\Facades\Log;
 use Inertia\Testing\AssertableInertia as Assert;
@@ -198,7 +198,7 @@ describe('getMatchDetails', function () {
                     'avatar' => 'https://example.com/avatar1.jpg',
                     'roster' => [],
                     'name' => 'Team 1',
-                    'type' => 'premade'
+                    'type' => 'premade',
                 ],
                 'faction2' => [
                     'faction_id' => 'faction2',
@@ -206,8 +206,8 @@ describe('getMatchDetails', function () {
                     'avatar' => 'https://example.com/avatar2.jpg',
                     'roster' => [],
                     'name' => 'Team 2',
-                    'type' => 'premade'
-                ]
+                    'type' => 'premade',
+                ],
             ],
             voting: [],
             calculate_elo: true,
@@ -246,8 +246,8 @@ describe('getMatchDetails', function () {
                     'teams',
                     'status',
                     'started_at',
-                    'finished_at'
-                ]
+                    'finished_at',
+                ],
             ]);
     });
 
@@ -268,7 +268,7 @@ describe('getMatchDetails', function () {
                     'avatar' => 'https://example.com/avatar1.jpg',
                     'roster' => [],
                     'name' => 'Team 1',
-                    'type' => 'premade'
+                    'type' => 'premade',
                 ],
                 'faction2' => [
                     'faction_id' => 'faction2',
@@ -276,8 +276,8 @@ describe('getMatchDetails', function () {
                     'avatar' => 'https://example.com/avatar2.jpg',
                     'roster' => [],
                     'name' => 'Team 2',
-                    'type' => 'premade'
-                ]
+                    'type' => 'premade',
+                ],
             ],
             voting: [],
             calculate_elo: true,
@@ -308,13 +308,13 @@ describe('getMatchDetails', function () {
                                         'ADR' => 75.5,
                                         'Kills' => 15,
                                         'Deaths' => 10,
-                                        'Assists' => 5
-                                    ]
-                                ]
-                            ]
-                        ]
-                    ]
-                ]
+                                        'Assists' => 5,
+                                    ],
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
             ]
         );
 
@@ -341,7 +341,7 @@ describe('getMatchDetails', function () {
                     'teams',
                     'status',
                     'started_at',
-                    'finished_at'
+                    'finished_at',
                 ],
                 'stats' => [
                     'rounds' => [
@@ -352,14 +352,14 @@ describe('getMatchDetails', function () {
                                         '*' => [
                                             'player_id',
                                             'nickname',
-                                            'player_stats'
-                                        ]
-                                    ]
-                                ]
-                            ]
-                        ]
-                    ]
-                ]
+                                            'player_stats',
+                                        ],
+                                    ],
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
             ]);
     });
 
@@ -380,7 +380,7 @@ describe('getMatchDetails', function () {
                     'avatar' => 'https://example.com/avatar1.jpg',
                     'roster' => [],
                     'name' => 'Team 1',
-                    'type' => 'premade'
+                    'type' => 'premade',
                 ],
                 'faction2' => [
                     'faction_id' => 'faction2',
@@ -388,8 +388,8 @@ describe('getMatchDetails', function () {
                     'avatar' => 'https://example.com/avatar2.jpg',
                     'roster' => [],
                     'name' => 'Team 2',
-                    'type' => 'premade'
-                ]
+                    'type' => 'premade',
+                ],
             ],
             voting: [],
             calculate_elo: true,
@@ -428,8 +428,8 @@ describe('getMatchDetails', function () {
                     'teams',
                     'status',
                     'started_at',
-                    'finished_at'
-                ]
+                    'finished_at',
+                ],
             ]);
     });
 
@@ -443,7 +443,7 @@ describe('getMatchDetails', function () {
 
         $response->assertStatus(404)
             ->assertJson([
-                'error' => 'Match not found'
+                'error' => 'Match not found',
             ]);
     });
 
@@ -461,7 +461,7 @@ describe('getMatchDetails', function () {
 
         $response->assertStatus(500)
             ->assertJson([
-                'error' => 'Failed to fetch match data'
+                'error' => 'Failed to fetch match data',
             ]);
     });
 
@@ -482,7 +482,7 @@ describe('getMatchDetails', function () {
                     'avatar' => 'https://example.com/avatar1.jpg',
                     'roster' => [],
                     'name' => 'Team 1',
-                    'type' => 'premade'
+                    'type' => 'premade',
                 ],
                 'faction2' => [
                     'faction_id' => 'faction2',
@@ -490,8 +490,8 @@ describe('getMatchDetails', function () {
                     'avatar' => 'https://example.com/avatar2.jpg',
                     'roster' => [],
                     'name' => 'Team 2',
-                    'type' => 'premade'
-                ]
+                    'type' => 'premade',
+                ],
             ],
             voting: [],
             calculate_elo: true,

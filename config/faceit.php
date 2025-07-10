@@ -1,4 +1,5 @@
 <?php
+
 return [
-  'api_key' => env('FACEIT_API_KEY', ''),
+    'api_key' => env('FACEIT_API_KEY', ''),
 ];

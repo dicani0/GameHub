@@ -3,8 +3,8 @@
 namespace App\Actions\Faceit;
 
 use App\Actions\Steam\GetSteamProfilesAction;
-use App\Data\Faceit\MatchDetailsData;
 use App\Data\Faceit\MatchData;
+use App\Data\Faceit\MatchDetailsData;
 use App\Data\Faceit\MatchStatsData;
 use App\Services\FaceitService;
 use Illuminate\Support\Facades\Cache;
@@ -13,6 +13,7 @@ use Spatie\LaravelData\Optional;
 class GetMatchDetailsAction
 {
     protected FaceitService $faceitService;
+
     protected GetSteamProfilesAction $getSteamProfilesAction;
 
     public function __construct(FaceitService $faceitService, GetSteamProfilesAction $getSteamProfilesAction)
@@ -21,14 +22,13 @@ class GetMatchDetailsAction
         $this->getSteamProfilesAction = $getSteamProfilesAction;
     }
 
-
     public function execute(string $matchId, bool $includeStats = false, bool $includeSteamProfiles = false): ?MatchDetailsData
     {
         $matchDetails = Cache::remember("faceit.match_details.{$matchId}", now()->addMinutes(10), function () use ($matchId) {
             return $this->getMatchDetails($matchId);
         });
 
-        if (!$matchDetails) {
+        if (! $matchDetails) {
             return null;
         }
 
@@ -50,8 +50,8 @@ class GetMatchDetailsAction
         if ($includeSteamProfiles) {
             $playerIdToSteamIdMap = $this->extractPlayerIdToSteamIdMapping($matchDetails);
             $steamIds = array_values($playerIdToSteamIdMap);
-            if (!empty($steamIds)) {
-                $steamProfilesData = Cache::remember("steam.profiles." . implode(',', $steamIds), now()->addMinutes(10), function () use ($steamIds) {
+            if (! empty($steamIds)) {
+                $steamProfilesData = Cache::remember('steam.profiles.'.implode(',', $steamIds), now()->addMinutes(10), function () use ($steamIds) {
                     return $this->getSteamProfilesAction->execute($steamIds);
                 });
 
@@ -75,7 +75,6 @@ class GetMatchDetailsAction
     {
         return $this->faceitService->getMatchDetails($matchId);
     }
-
 
     private function getMatchStats(string $matchId): ?array
     {
@@ -103,23 +102,24 @@ class GetMatchDetailsAction
 
     private function sortPlayersByADR(array $matchStats): array
     {
-        if (!isset($matchStats['rounds'])) {
+        if (! isset($matchStats['rounds'])) {
             return $matchStats;
         }
 
         foreach ($matchStats['rounds'] as &$round) {
-            if (!isset($round['teams'])) {
+            if (! isset($round['teams'])) {
                 continue;
             }
 
             foreach ($round['teams'] as &$team) {
-                if (!isset($team['players'])) {
+                if (! isset($team['players'])) {
                     continue;
                 }
 
                 usort($team['players'], function ($a, $b) {
                     $adrA = $a['player_stats']['ADR'] ?? 0;
                     $adrB = $b['player_stats']['ADR'] ?? 0;
+
                     return $adrB <=> $adrA;
                 });
             }

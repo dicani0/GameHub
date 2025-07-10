@@ -10,12 +10,14 @@ use Illuminate\Support\Facades\Log;
 class SteamService
 {
     private Client $client;
+
     private string $apiKey;
+
     private string $baseUrl;
 
     public function __construct()
     {
-        $this->client = new Client();
+        $this->client = new Client;
         $this->apiKey = Config::get('steam.api_key');
         $this->baseUrl = Config::get('steam.base_url');
     }
@@ -28,7 +30,7 @@ class SteamService
             'query' => [
                 'key' => $this->apiKey,
                 'steamids' => $steamIdsString,
-            ]
+            ],
         ]);
     }
 
@@ -50,7 +52,7 @@ class SteamService
                 'key' => $this->apiKey,
                 'steamid' => $steamId,
                 'appid' => '730', // CS:GO App ID
-            ]
+            ],
         ]);
     }
 
@@ -61,7 +63,7 @@ class SteamService
                 'key' => $this->apiKey,
                 'steamid' => $steamId,
                 'appid' => '730', // CS2 uses the same App ID as CS:GO
-            ]
+            ],
         ]);
     }
 
@@ -73,23 +75,22 @@ class SteamService
                 'steamid' => $steamId,
                 'include_appinfo' => 1,
                 'include_played_free_games' => 1,
-            ]
+            ],
         ]);
     }
 
     public function getCS2Playtime(string $steamId): ?int
     {
         $ownedGames = $this->getOwnedGames($steamId);
-        if (!$ownedGames || !isset($ownedGames['response']['games'])) {
+        if (! $ownedGames || ! isset($ownedGames['response']['games'])) {
             return null;
         }
 
         foreach ($ownedGames['response']['games'] as $game) {
             if ($game['appid'] === 730) {
-                return $game['playtime_forever'] ? : null;
+                return $game['playtime_forever'] ?: null;
             }
         }
-
 
         return null;
     }
@@ -101,6 +102,7 @@ class SteamService
         foreach ($steamIds as $steamId) {
             $playtimes[$steamId] = $this->getCS2Playtime($steamId);
         }
+
         return $playtimes;
     }
 
@@ -110,7 +112,7 @@ class SteamService
             'query' => [
                 'key' => $this->apiKey,
                 'steamid' => $steamId,
-            ]
+            ],
         ]);
 
         if ($response && isset($response['response']['player_level'])) {
@@ -137,6 +139,7 @@ class SteamService
             $response = $this->client->request($method, "{$this->baseUrl}{$endpoint}", $options);
 
             $contents = $response->getBody()->getContents();
+
             return json_decode($contents, true);
         } catch (GuzzleException $e) {
             Log::error("Steam API error: {$e->getMessage()}", [

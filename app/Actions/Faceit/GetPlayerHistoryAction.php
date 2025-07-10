@@ -15,37 +15,24 @@ class GetPlayerHistoryAction
         $this->faceitService = $faceitService;
     }
 
-    /**
-     * @param string $playerId
-     * @return array|null
-     */
     public function execute(string $playerId): ?array
     {
-        return Cache::remember('faceit_player_history_' . $playerId, 60 * 60, function () use ($playerId) {
+        return Cache::remember('faceit_player_history_'.$playerId, 60 * 60, function () use ($playerId) {
             return $this->getPlayerHistory($playerId);
         });
     }
 
-    /**
-     * @param string $playerId
-     * @return array|null
-     */
     private function getPlayerHistory(string $playerId): ?array
     {
         $history = $this->faceitService->getPlayerHistory($playerId, 20, 0, 'cs2');
-        if (!$history || !isset($history['items'])) {
+        if (! $history || ! isset($history['items'])) {
             return null;
         }
         $history = $history['items'];
+
         return $this->mapMatchDetails($history, $playerId);
     }
 
-    /**
-     * @param mixed  $history
-     * @param string $playerId
-     *
-     * @return array
-     */
     private function mapMatchDetails(mixed $history, string $playerId): array
     {
         return Arr::map($history, function (array $item) use ($playerId) {
